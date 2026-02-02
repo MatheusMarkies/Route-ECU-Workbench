@@ -2,7 +2,10 @@ package com.brasens.serialport;
 
 import com.fazecast.jSerialComm.SerialPort;
 import javafx.application.Platform;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter @Setter
 public class SerialReadder{
     private SerialPort serialPort;
     private String serialPortName;
@@ -22,7 +25,7 @@ public class SerialReadder{
         SerialPort[] serialPorts = SerialManager.getSerialPortList();
 
         for (SerialPort port: serialPorts)
-            if(port.getDescriptivePortName().equals(serialPortName)) {
+            if(port.getSystemPortName().equals(serialPortName)) {
                 serialPort = port;
                 break;
             }

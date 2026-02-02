@@ -1,6 +1,7 @@
 package com.brasens.serialport;
 
 import com.fazecast.jSerialComm.SerialPort;
+import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
 import com.fazecast.jSerialComm.SerialPortPacketListener;
 import javafx.event.ActionEvent;
@@ -11,31 +12,13 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
-public class SerialRunnable implements SerialPortPacketListener, Runnable {
+public class SerialRunnable implements SerialPortDataListener, Runnable {
 
     private final SerialPort port;
+    private final StringBuilder rxBuffer = new StringBuilder();
 
-    //int oldSize = 0;
-    //ObservableList<XYChart.Data> data = FXCollections.observableArrayList();
-/*
-    void onClickInConnectButton(ActionEvent event) {
-        try {
-            serialReadder = new SerialReadder(choisebox_serialport.getValue());
-            if(serialReadder.connect()) {
-                System.out.println("Connect!");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-*/
     public SerialRunnable(SerialPort port) {
         this.port = port;
-    }
-
-    @Override
-    public int getPacketSize() {
-        return SerialReadder.PACKET_SIZE_IN_BYTES;
     }
 
     @Override
@@ -44,46 +27,46 @@ public class SerialRunnable implements SerialPortPacketListener, Runnable {
     }
 
     @Override
-    public void run() {
-        port.addDataListener(this);
-        //mouseTrapCarManager.getMainFrameController().getRotationSeries().getData().add(new XYChart.Data<String,Double>("0",0.));
-    }
-
-    enum ReadType{
-
-    }
-
-    ReadType readType = null;
-    boolean getReadType = true;
-    private final byte[] buffer = new byte[2048];
-
-    @Override
     public void serialEvent(SerialPortEvent event) {
         if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
             return;
-        byte[] buffer = new byte[port.bytesAvailable()];
 
-        String inputString = new String(buffer, StandardCharsets.UTF_16LE);
+        byte[] newData = new byte[port.bytesAvailable()];
+        int numRead = port.readBytes(newData, newData.length);
 
-        Scanner scanner_stream=  new Scanner( port.getInputStream());
-        while(scanner_stream.hasNextLine()) {
-            String received_string = scanner_stream.nextLine();
+        if (numRead > 0) {
+            String textChunk = new String(newData, StandardCharsets.US_ASCII);
 
-            int received_str_len = received_string.length();
-            inputString = received_string;
-
-            System.out.println("Input data: " + inputString);
-
-            try {
-
-
-            }catch (Exception exception){//System.err.println(exception);
-
+            synchronized (rxBuffer) {
+                rxBuffer.append(textChunk);
+                processBuffer();
             }
         }
-
     }
-    public static double toDouble(byte[] bytes) {
-        return ByteBuffer.wrap(bytes).getDouble();
+
+    private void processBuffer() {
+        int terminatorIndex;
+        while ((terminatorIndex = rxBuffer.indexOf("\r")) != -1) {
+            String completeCommand = rxBuffer.substring(0, terminatorIndex);
+
+            rxBuffer.delete(0, terminatorIndex + 1);
+            handleCommand(completeCommand);
+        }
+    }
+
+    private void handleCommand(String command) {
+        System.out.println("Comando Recebido: " + command);
+
+        /*
+        javafx.application.Platform.runLater(() -> {
+
+        });
+        */
+    }
+
+    @Override
+    public void run() {
+        // Registar este listener na porta
+        port.addDataListener(this);
     }
 }

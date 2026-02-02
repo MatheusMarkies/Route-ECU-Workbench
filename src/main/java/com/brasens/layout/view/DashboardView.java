@@ -1,26 +1,10 @@
 package com.brasens.layout.view;
 
-
-import com.brasens.Config;
 import com.brasens.NetworkManager;
-import com.brasens.Workbench;
 import com.brasens.layout.ApplicationWindow;
-import com.brasens.layout.LayoutSizeManager;
-import com.brasens.layout.components.Card;
-import com.brasens.layout.components.MinimizedCard;
-import com.brasens.layout.components.charts.CustomBarChart;
 import com.brasens.layout.controller.DashboardController;
-import com.brasens.utilities.common.enums.PriorityState;
-import com.brasens.utilities.common.enums.WorkOrderState;
 import com.brasens.utils.Page;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.geometry.Pos;
-import javafx.scene.chart.*;
-import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import lombok.Getter;
 import lombok.Setter;
 

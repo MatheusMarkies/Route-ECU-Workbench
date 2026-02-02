@@ -17,7 +17,7 @@ public class SerialManager{
         SerialPort[] serialPortList = getSerialPortList();
 
         for (SerialPort port: serialPortList) {
-            names.add(port.getDescriptivePortName());
+            names.add(port.getSystemPortName());
         }
 
         return names;
