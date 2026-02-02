@@ -1,5 +1,6 @@
 package com.brasens.serialport;
 
+import com.brasens.objects.SerialPorts;
 import com.fazecast.jSerialComm.SerialPort;
 
 import java.util.ArrayList;
@@ -12,12 +13,17 @@ public class SerialManager{
         return SerialPort.getCommPorts();
     }
 
-    public static List<String> getSerialPortNames(){
-        List<String> names = new ArrayList<String>();
+    public static List<SerialPorts> getSerialPortNames(){
+        List<SerialPorts> names = new ArrayList<SerialPorts>();
         SerialPort[] serialPortList = getSerialPortList();
 
         for (SerialPort port: serialPortList) {
-            names.add(port.getSystemPortName());
+            SerialPorts newPort = new SerialPorts();
+
+            newPort.setSystemName(port.getSystemPortName());
+            newPort.setDeviceName(port.getDescriptivePortName());
+
+            names.add(newPort);
         }
 
         return names;

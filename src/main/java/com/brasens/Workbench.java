@@ -38,7 +38,9 @@ public class Workbench extends Application {
 
         System.out.println("APP_VERSION: "+ APP_VERSION);
 
-        var root = new ApplicationWindow();
+        ApplicationWindow window = new ApplicationWindow();
+
+        var root = window;
         var antialiasing = Platform.isSupported(ConditionalFeature.EFFECT)
                 ? SceneAntialiasing.BALANCED
                 : SceneAntialiasing.DISABLED;
@@ -52,6 +54,7 @@ public class Workbench extends Application {
         stage.setScene(scene);
 
         stage.setTitle("Workbench");
+        window.setWorkbench(this);
 
         //Image brasensIcon = new Image(Workbench.class.getResource("/mspm/resources/Icone File.png").toString());
 
