@@ -7,11 +7,14 @@ import com.fazecast.jSerialComm.SerialPortPacketListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.chart.XYChart;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
+@Getter @Setter
 public class SerialRunnable implements SerialPortDataListener, Runnable {
 
     private final SerialPort port;
@@ -56,6 +59,7 @@ public class SerialRunnable implements SerialPortDataListener, Runnable {
 
     private void handleCommand(String command) {
         System.out.println("Comando Recebido: " + command);
+        sendCommand("OK");
 
         /*
         javafx.application.Platform.runLater(() -> {
@@ -64,9 +68,31 @@ public class SerialRunnable implements SerialPortDataListener, Runnable {
         */
     }
 
+    public boolean sendCommand(String command) {
+        return sendStringWithFlush(command + "\r");
+    }
+
+    public boolean sendStringWithFlush(String data) {
+        if (port == null || !port.isOpen()) {
+            return false;
+        }
+
+        try {
+            System.out.println(">> Enviando: "+data);
+            byte[] bytes = data.getBytes();
+            int bytesSent = port.writeBytes(bytes, bytes.length);
+
+            port.flushIOBuffers();
+
+            return (bytesSent == bytes.length);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     @Override
     public void run() {
-        // Registar este listener na porta
         port.addDataListener(this);
     }
 }

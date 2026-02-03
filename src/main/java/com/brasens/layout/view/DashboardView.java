@@ -7,7 +7,7 @@ import com.brasens.layout.components.CustomButton;
 import com.brasens.layout.controller.DashboardController;
 import com.brasens.objects.SerialPorts;
 import com.brasens.serialport.SerialManager;
-import com.brasens.serialport.SerialReadder;
+import com.brasens.serialport.SerialReader;
 import com.brasens.utils.Page;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -33,6 +33,8 @@ import java.util.List;
 public class DashboardView extends Page {
 
     private CustomButton connectButton;
+
+    private SerialReader reader = new SerialReader();
 
     public DashboardView(ApplicationWindow applicationWindow, NetworkManager networkManager) {
 
@@ -116,10 +118,8 @@ public class DashboardView extends Page {
             if (selected != null) {
                 System.out.println("Conectando em: " + selected.getSystemName());
 
-                SerialReadder reader = new SerialReadder(selected.getSystemName());
-                if(reader.connect()) {
-
-                }
+                reader = new SerialReader(selected.getSystemName());
+                reader.connect();
 
                 popupStage.close();
             } else {

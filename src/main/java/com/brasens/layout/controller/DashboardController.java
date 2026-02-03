@@ -32,6 +32,7 @@ public class DashboardController extends Controller {
     @Override
     public void init() {
         dashboardView = applicationWindow.getViewManager().getDashboardView();
+        delay = 1000;
     }
 
     @Override
@@ -41,7 +42,10 @@ public class DashboardController extends Controller {
 
     @Override
     public void update() {
-
+        if(dashboardView.getReader().getRunnable() != null)
+            if(dashboardView.getReader().getRunnable().getPort().isOpen()){
+                dashboardView.getReader().getRunnable().sendCommand("OK");
+            }
     }
 
 }
