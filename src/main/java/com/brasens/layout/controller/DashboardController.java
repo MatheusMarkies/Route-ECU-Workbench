@@ -42,10 +42,7 @@ public class DashboardController extends Controller {
 
     @Override
     public void update() {
-        if(dashboardView.getReader().getRunnable() != null)
-            if(dashboardView.getReader().getRunnable().getPort().isOpen()){
-                dashboardView.getReader().getRunnable().sendCommand("OK");
-            }
+
     }
 
 }

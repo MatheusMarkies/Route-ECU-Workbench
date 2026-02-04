@@ -67,8 +67,6 @@ public class SerialReader {
 
         runnable = new SerialRunnable(serialPort);
         runnable.run();
-
-        runnable.sendCommand("AT+WHO");
     }
 
     public boolean isConnected() {
