@@ -55,6 +55,7 @@ dependencies {
     implementation group: 'org.kordamp.ikonli', name: 'ikonli-fontawesome-pack', version: '12.3.1'
     testCompileOnly 'org.projectlombok:lombok:1.18.26'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.26'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
 }
 
 test {

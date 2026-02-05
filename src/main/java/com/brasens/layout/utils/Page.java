@@ -1,4 +1,4 @@
-package com.brasens.utils;
+package com.brasens.layout.utils;
 
 import com.brasens.NetworkManager;
 import com.brasens.layout.ApplicationWindow;

@@ -1,23 +1,19 @@
 package com.brasens.layout.components.navbar;
 
 import com.brasens.Config;
-import com.brasens.Workbench;
 import com.brasens.layout.ApplicationWindow;
 import com.brasens.layout.LayoutSizeManager;
 import com.brasens.utilities.math.Interpolation;
-import com.brasens.utils.Page;
+import com.brasens.layout.utils.Page;
 import javafx.animation.Animation;
 import javafx.animation.Interpolator;
 import javafx.animation.Transition;
 import javafx.scene.Cursor;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.util.Duration;
 import lombok.Getter;
 import lombok.Setter;

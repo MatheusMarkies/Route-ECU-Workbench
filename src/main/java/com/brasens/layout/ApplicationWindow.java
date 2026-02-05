@@ -2,8 +2,8 @@ package com.brasens.layout;
 
 import com.brasens.NetworkManager;
 import com.brasens.Workbench;
-import com.brasens.utils.NodeUtils;
-import com.brasens.utils.Page;
+import com.brasens.layout.utils.NodeUtils;
+import com.brasens.layout.utils.Page;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.*;

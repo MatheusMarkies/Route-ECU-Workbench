@@ -3,7 +3,7 @@ package com.brasens.layout.components;
 import com.brasens.Workbench;
 import com.brasens.layout.LayoutSizeManager;
 import com.brasens.utilities.common.ImageUtils;
-import com.brasens.utils.BadgeStyle;
+import com.brasens.layout.utils.BadgeStyle;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;

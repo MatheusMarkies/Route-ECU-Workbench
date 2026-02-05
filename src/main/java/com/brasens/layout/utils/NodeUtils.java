@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: MIT */
 
-package com.brasens.utils;
+package com.brasens.layout.utils;
 
 import javafx.geometry.Insets;
 import javafx.scene.Node;

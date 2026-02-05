@@ -1,7 +1,7 @@
 package com.brasens.layout.components;
 
 import com.brasens.layout.LayoutSizeManager;
-import com.brasens.utils.BadgeStyle;
+import com.brasens.layout.utils.BadgeStyle;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;

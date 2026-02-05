@@ -1,4 +1,4 @@
-package com.brasens.utils;
+package com.brasens.layout.utils;
 
 public enum BadgeStyle {
     PRIMARY,

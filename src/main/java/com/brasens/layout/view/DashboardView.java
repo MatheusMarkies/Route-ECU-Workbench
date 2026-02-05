@@ -2,14 +2,12 @@ package com.brasens.layout.view;
 
 import com.brasens.NetworkManager;
 import com.brasens.layout.ApplicationWindow;
-import com.brasens.layout.LayoutSizeManager;
 import com.brasens.layout.components.CustomButton;
 import com.brasens.layout.controller.DashboardController;
 import com.brasens.objects.SerialPorts;
 import com.brasens.serialport.SerialManager;
-import com.brasens.serialport.SerialReader;
-import com.brasens.utils.Page;
-import javafx.application.Platform;
+import com.brasens.layout.utils.Page;
+import com.brasens.serialport.SerialRunnable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -33,8 +31,10 @@ import java.util.List;
 public class DashboardView extends Page {
 
     private CustomButton connectButton;
+    private CustomButton injectorTestButton;
+    private CustomButton ignitionTestButton;
 
-    private SerialReader reader = new SerialReader();
+    private SerialRunnable serialRunnable = new SerialRunnable();
 
     public DashboardView(ApplicationWindow applicationWindow, NetworkManager networkManager) {
 
@@ -56,26 +56,55 @@ public class DashboardView extends Page {
         AnchorPane.setRightAnchor(contentAnchorPane, 0.0);
         AnchorPane.setTopAnchor(contentAnchorPane, 0.0);
 
+        String buttonStyle = "-fx-background-color: #ffffff; -fx-background-radius: 8px; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);";
+        double buttonWidth = 250;
+        double buttonHeight = 60;
+        double spacing = 20; // Espaço entre os botões
+        double startX = 40.0; // Posição inicial X
+
         Image connectIcon = new Image(getClass().getResourceAsStream("/mspm/icons/no-connection.png"));
-
-        connectButton = new CustomButton(
-                "Conectar Dispositivo",
-                connectIcon,
-                "-fx-background-color: #ffffff; -fx-background-radius: 8px; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);",
-                32
-        );
-
-        connectButton.setPrefWidth(250);
-        connectButton.setPrefHeight(60);
-
+        connectButton = new CustomButton("Conectar Dispositivo", connectIcon, buttonStyle, 32);
+        connectButton.setPrefWidth(buttonWidth);
+        connectButton.setPrefHeight(buttonHeight);
         connectButton.setAnimation(Color.web("#ffffff"), Color.web("#f0f0f0"), 200);
 
         AnchorPane.setTopAnchor(connectButton, 40.0);
-        AnchorPane.setLeftAnchor(connectButton, 40.0);
+        AnchorPane.setLeftAnchor(connectButton, startX);
 
         connectButton.setOnMouseClicked(event -> openDeviceSelectionPopup());
 
-        contentAnchorPane.getChildren().add(connectButton);
+        Image injectorIcon = new Image(getClass().getResourceAsStream("/mspm/icons/no-connection.png"));
+        injectorTestButton = new CustomButton("Teste de Injetores", injectorIcon, buttonStyle, 32);
+        injectorTestButton.setPrefWidth(buttonWidth);
+        injectorTestButton.setPrefHeight(buttonHeight);
+        injectorTestButton.setAnimation(Color.web("#ffffff"), Color.web("#f0f0f0"), 200);
+
+        AnchorPane.setTopAnchor(injectorTestButton, 40.0);
+        AnchorPane.setLeftAnchor(injectorTestButton, startX + buttonWidth + spacing);
+
+        injectorTestButton.setOnMouseClicked(event -> {
+            System.out.println("Iniciando Teste de Injetores...");
+            if(getSerialRunnable().isConnected())
+                getSerialRunnable().sendCommand("AT+INJTEST");
+        });
+
+        Image ignitionIcon = new Image(getClass().getResourceAsStream("/mspm/icons/no-connection.png"));
+        ignitionTestButton = new CustomButton("Teste de Ignição", ignitionIcon, buttonStyle, 32);
+        ignitionTestButton.setPrefWidth(buttonWidth);
+        ignitionTestButton.setPrefHeight(buttonHeight);
+        ignitionTestButton.setAnimation(Color.web("#ffffff"), Color.web("#f0f0f0"), 200);
+
+        // Posicionamento (Ao lado do injectorTestButton)
+        AnchorPane.setTopAnchor(ignitionTestButton, 40.0);
+        AnchorPane.setLeftAnchor(ignitionTestButton, startX + (buttonWidth + spacing) * 2);
+
+        ignitionTestButton.setOnMouseClicked(event -> {
+            System.out.println("Iniciando Teste de Ignição...");
+            if(getSerialRunnable().isConnected())
+                getSerialRunnable().sendCommand("AT+IGNTEST");
+        });
+
+        contentAnchorPane.getChildren().addAll(connectButton, injectorTestButton, ignitionTestButton);
         getChildren().add(contentAnchorPane);
     }
 
@@ -86,26 +115,21 @@ public class DashboardView extends Page {
         popupStage.initStyle(StageStyle.UTILITY);
         popupStage.setTitle("Conexão Serial");
 
-        // Layout do Popup
         VBox popupLayout = new VBox(20);
         popupLayout.setAlignment(Pos.CENTER);
         popupLayout.setPadding(new Insets(30));
         popupLayout.setStyle("-fx-background-color: #f9f9f9; -fx-border-color: #cccccc; -fx-border-width: 1px;");
 
-        // Título
         Label titleLabel = new Label("Selecione a Porta COM");
         titleLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #333333;");
 
-        // Dropdown (ComboBox) com as portas
         ComboBox<SerialPorts> portComboBox = new ComboBox<>();
         portComboBox.setPrefWidth(200);
         portComboBox.setPromptText("Procurando portas...");
 
-        // Botão de Atualizar Lista
         Button refreshBtn = new Button("Atualizar Lista");
         refreshBtn.setOnAction(e -> updatePortList(portComboBox));
 
-        // Popula a lista inicialmente
         updatePortList(portComboBox);
 
         Button connectBtn = new Button("CONECTAR");
@@ -118,8 +142,8 @@ public class DashboardView extends Page {
             if (selected != null) {
                 System.out.println("Conectando em: " + selected.getSystemName());
 
-                reader = new SerialReader(selected.getSystemName());
-                reader.connect();
+                serialRunnable = new SerialRunnable(selected.getSystemName(),this);
+                serialRunnable.connect();
 
                 popupStage.close();
             } else {

@@ -1,7 +1,7 @@
 package com.brasens.layout.components.navbar;
 
 import com.brasens.layout.ApplicationWindow;
-import com.brasens.utils.Page;
+import com.brasens.layout.utils.Page;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
