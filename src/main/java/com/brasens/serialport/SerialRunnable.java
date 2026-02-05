@@ -23,7 +23,7 @@ import java.util.Scanner;
 public class SerialRunnable implements SerialPortDataListener, Runnable {
 
     private SerialPort serialPort;
-    private StringBuilder rxBuffer = new StringBuilder();
+    private final StringBuilder rxBuffer = new StringBuilder();
 
     private String serialPortName;
 
@@ -144,6 +144,10 @@ public class SerialRunnable implements SerialPortDataListener, Runnable {
 
         if (command.trim().startsWith("{")) {
             Telemetry data = TelemetryParser.processJson(command);
+
+            javafx.application.Platform.runLater(() -> {
+
+            });
         }
 
         javafx.application.Platform.runLater(() -> {
