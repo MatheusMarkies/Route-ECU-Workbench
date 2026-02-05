@@ -11,20 +11,25 @@ public class EngineTelemetry extends Telemetry{
 
     @Data
     public static class EngineInfo {
+
+        public enum PistonPhase {
+            POWER, EXHAUST, COMPRESSION, INTAKE
+        }
+
         private ShaftInfo crankshaft;
         private ShaftInfo camshaft;
 
         @JsonProperty("piston_one")
-        private String pistonOne;
+        private PistonPhase pistonOne;
 
         @JsonProperty("piston_two")
-        private String pistonTwo;
+        private PistonPhase pistonTwo;
 
         @JsonProperty("piston_three")
-        private String pistonThree;
+        private PistonPhase pistonThree;
 
         @JsonProperty("piston_four")
-        private String pistonFour;
+        private PistonPhase pistonFour;
     }
 
     @Data

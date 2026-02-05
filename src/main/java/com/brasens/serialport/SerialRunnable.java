@@ -1,6 +1,8 @@
 package com.brasens.serialport;
 
+import com.brasens.layout.controller.DashboardController;
 import com.brasens.layout.view.DashboardView;
+import com.brasens.objects.SerialCommand;
 import com.brasens.objects.Telemetry;
 import com.brasens.utilities.TelemetryParser;
 import com.fazecast.jSerialComm.SerialPort;
@@ -17,6 +19,8 @@ import lombok.Setter;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 @Getter @Setter @AllArgsConstructor
@@ -39,6 +43,8 @@ public class SerialRunnable implements SerialPortDataListener, Runnable {
     public static final int WRITE_TIMEOUT = 100;
 
     public static final int PACKET_SIZE_IN_BYTES = 8;
+
+    List<SerialCommand> commandsBuffer = new ArrayList<>();
 
     public SerialRunnable() {
 
@@ -134,20 +140,38 @@ public class SerialRunnable implements SerialPortDataListener, Runnable {
             String completeCommand = rxBuffer.substring(0, terminatorIndex);
 
             rxBuffer.delete(0, terminatorIndex + 1);
-            handleCommand(completeCommand);
+            handleRX(completeCommand);
         }
     }
 
-    private void handleCommand(String command) {
-        System.out.println("Comando Recebido: " + command);
-        sendCommand("OK");
+    private void handleRX(String command) {
+        boolean isAnswer = false;
+        if(!commandsBuffer.isEmpty()){
+            if(commandsBuffer.get(0).getAnswer().equals(command)){
+                isAnswer = true;
+                System.out.println("Resposta Recebida: " + command);
+                commandsBuffer.remove(0);
+            }
+        }
 
-        if (command.trim().startsWith("{")) {
-            Telemetry data = TelemetryParser.processJson(command);
+        if(!isAnswer) {
+            if (command.length() >= 2)
+                sendCommand("OK");
+            else return;
 
-            javafx.application.Platform.runLater(() -> {
+            System.out.println("Comando Recebido: " + command);
 
-            });
+            if (command.trim().startsWith("{")) {
+                Telemetry data = TelemetryParser.processJson(command);
+                if (data != null) {
+                    getDashboardView().getApplicationWindow().getTelemetryDataManager().addData(data);
+
+                    javafx.application.Platform.runLater(() -> {
+                        DashboardController controller = (DashboardController) getDashboardView().getController();
+                        controller.onTelemetryReceived(data);
+                    });
+                }
+            }
         }
 
         javafx.application.Platform.runLater(() -> {
@@ -156,6 +180,13 @@ public class SerialRunnable implements SerialPortDataListener, Runnable {
     }
 
     public boolean sendCommand(String command) {
+        if(!command.equals("OK"))
+            commandsBuffer.add(new SerialCommand(command, "OK"));
+        return sendStringWithFlush(command + "\r");
+    }
+
+    public boolean sendCommandWithAnswer(String command, String answer) {
+        commandsBuffer.add(new SerialCommand(command, answer));
         return sendStringWithFlush(command + "\r");
     }
 
@@ -180,6 +211,31 @@ public class SerialRunnable implements SerialPortDataListener, Runnable {
 
     @Override
     public void run() {
-        serialPort.addDataListener(this);
+        if (serialPort != null && serialPort.isOpen()) {
+            serialPort.addDataListener(this);
+        }
+
+        System.out.println("Thread Serial Iniciada para: " + serialPortName);
+
+        while (isConnected() && !commandsBuffer.isEmpty()) {
+            try {
+
+                long rtt = System.currentTimeMillis() - commandsBuffer.get(0).getTimestamp();
+                if (rtt > 100) {
+                    sendCommandWithAnswer(commandsBuffer.get(0).getCommand(), commandsBuffer.get(0).getAnswer());
+                    commandsBuffer.remove(0);
+                }
+
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                System.out.println("Thread Serial interrompida.");
+                Thread.currentThread().interrupt();
+                break;
+            } catch (Exception e) {
+                System.err.println("Erro no loop da serial: " + e.getMessage());
+            }
+        }
+
+        System.out.println("Thread Serial finalizada.");
     }
 }

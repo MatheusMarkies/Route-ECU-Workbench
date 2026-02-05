@@ -4,6 +4,7 @@ import com.brasens.NetworkManager;
 import com.brasens.Workbench;
 import com.brasens.layout.utils.NodeUtils;
 import com.brasens.layout.utils.Page;
+import com.brasens.objects.TelemetryDataManager;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.*;
@@ -55,6 +56,8 @@ public class ApplicationWindow extends AnchorPane {
     private ViewManager viewManager;
 
     BorderPane borderPane = new BorderPane();
+
+    TelemetryDataManager telemetryDataManager =  new TelemetryDataManager();
 
     // Manager instances for network and visualization
     public void init(){
