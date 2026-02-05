@@ -4,6 +4,7 @@ import com.brasens.NetworkManager;
 import com.brasens.layout.ApplicationWindow;
 import com.brasens.layout.components.CustomButton;
 import com.brasens.layout.controller.DashboardController;
+import com.brasens.objects.SerialCommand;
 import com.brasens.objects.SerialPorts;
 import com.brasens.serialport.SerialManager;
 import com.brasens.layout.utils.Page;
@@ -83,9 +84,13 @@ public class DashboardView extends Page {
         AnchorPane.setLeftAnchor(injectorTestButton, startX + buttonWidth + spacing);
 
         injectorTestButton.setOnMouseClicked(event -> {
-            System.out.println("Iniciando Teste de Injetores...");
             if(getSerialRunnable().isConnected())
-                getSerialRunnable().sendCommand("AT+INJTEST");
+                getSerialRunnable().sendCommand(new SerialCommand("AT+INJTEST", "OK", ()->{
+                    getApplicationWindow().getTelemetryDataManager().setInInjectorTest(!getApplicationWindow().getTelemetryDataManager().isInInjectorTest());
+                    if(getApplicationWindow().getTelemetryDataManager().isInInjectorTest())
+                        System.out.println("Iniciando Teste de Injetores...");
+                    else System.out.println("Finalizando Teste de Injetores...");
+                }, 100));
         });
 
         Image ignitionIcon = new Image(getClass().getResourceAsStream("/mspm/icons/no-connection.png"));
@@ -99,9 +104,13 @@ public class DashboardView extends Page {
         AnchorPane.setLeftAnchor(ignitionTestButton, startX + (buttonWidth + spacing) * 2);
 
         ignitionTestButton.setOnMouseClicked(event -> {
-            System.out.println("Iniciando Teste de Ignição...");
             if(getSerialRunnable().isConnected())
-                getSerialRunnable().sendCommand("AT+IGNTEST");
+                getSerialRunnable().sendCommand(new SerialCommand("AT+IGNTEST", "OK", ()->{
+                    getApplicationWindow().getTelemetryDataManager().setInIgnitionTest(!getApplicationWindow().getTelemetryDataManager().isInIgnitionTest());
+                    if(getApplicationWindow().getTelemetryDataManager().isInIgnitionTest())
+                        System.out.println("Iniciando Teste de Ignição...");
+                    else System.out.println("Finalizando Teste de Ignição...");
+                }, 100));
         });
 
         contentAnchorPane.getChildren().addAll(connectButton, injectorTestButton, ignitionTestButton);

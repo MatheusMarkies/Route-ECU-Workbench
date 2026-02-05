@@ -16,6 +16,13 @@ public class TelemetryDataManager {
     private final List<BatteryTelemetry> batteryHistory = Collections.synchronizedList(new ArrayList<>());
     private final List<EngineTelemetry> engineHistory = Collections.synchronizedList(new ArrayList<>());
 
+    private boolean inIgnitionTest = false;
+    private boolean inInjectorTest = false;
+
+    public TelemetryDataManager() {
+
+    }
+
     public void addData(Telemetry data) {
         if (data instanceof VRTelemetry) vrHistory.add((VRTelemetry) data);
         else if (data instanceof ADCTelemetry) adcHistory.add((ADCTelemetry) data);

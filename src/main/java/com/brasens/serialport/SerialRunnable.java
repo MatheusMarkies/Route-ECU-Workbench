@@ -90,7 +90,12 @@ public class SerialRunnable implements SerialPortDataListener, Runnable {
 
         System.out.println("Sucesso: Porta serial '" + serialPortName + "' aberta e configurada");
 
-        this.run();
+        Thread thread = new Thread(this);
+        thread.setDaemon(true);
+        thread.setName("SerialWorker-" + serialPortName);
+        thread.start();
+
+        sendCommand(new SerialCommand("AT", 1000));
     }
 
     public void reconnect() {
@@ -149,14 +154,20 @@ public class SerialRunnable implements SerialPortDataListener, Runnable {
         if(!commandsBuffer.isEmpty()){
             if(commandsBuffer.get(0).getAnswer().equals(command)){
                 isAnswer = true;
+                System.out.println();
                 System.out.println("Resposta Recebida: " + command);
+
+                if (commandsBuffer.get(0).getCallback() != null) {
+                    javafx.application.Platform.runLater(commandsBuffer.get(0).getCallback());
+                }
+
                 commandsBuffer.remove(0);
             }
         }
 
         if(!isAnswer) {
             if (command.length() >= 2)
-                sendCommand("OK");
+                directSend("OK");
             else return;
 
             System.out.println("Comando Recebido: " + command);
@@ -179,15 +190,13 @@ public class SerialRunnable implements SerialPortDataListener, Runnable {
         });
     }
 
-    public boolean sendCommand(String command) {
-        if(!command.equals("OK"))
-            commandsBuffer.add(new SerialCommand(command, "OK"));
+    public boolean directSend(String command) {
         return sendStringWithFlush(command + "\r");
     }
 
-    public boolean sendCommandWithAnswer(String command, String answer) {
-        commandsBuffer.add(new SerialCommand(command, answer));
-        return sendStringWithFlush(command + "\r");
+    public boolean sendCommand(SerialCommand command) {
+        commandsBuffer.add(command);
+        return sendStringWithFlush(command.getCommand() + "\r");
     }
 
     public boolean sendStringWithFlush(String data) {
@@ -217,16 +226,19 @@ public class SerialRunnable implements SerialPortDataListener, Runnable {
 
         System.out.println("Thread Serial Iniciada para: " + serialPortName);
 
-        while (isConnected() && !commandsBuffer.isEmpty()) {
+        while (isConnected() && !Thread.currentThread().isInterrupted()) {
             try {
+                if (!commandsBuffer.isEmpty()) {
+                    SerialCommand first = commandsBuffer.get(0);
+                    long rtt = System.currentTimeMillis() - first.getTimestamp();
 
-                long rtt = System.currentTimeMillis() - commandsBuffer.get(0).getTimestamp();
-                if (rtt > 100) {
-                    sendCommandWithAnswer(commandsBuffer.get(0).getCommand(), commandsBuffer.get(0).getAnswer());
-                    commandsBuffer.remove(0);
+                    if (rtt > first.getTimeout()) {
+                        System.out.println("Timeout detectado para: " + first.getCommand());
+                        sendCommand(first);
+                        commandsBuffer.remove(0);
+                    }
                 }
-
-                Thread.sleep(50);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 System.out.println("Thread Serial interrompida.");
                 Thread.currentThread().interrupt();
