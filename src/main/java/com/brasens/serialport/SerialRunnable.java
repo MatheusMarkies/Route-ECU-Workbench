@@ -176,6 +176,7 @@ public class SerialRunnable implements SerialPortDataListener, Runnable {
                 Telemetry data = TelemetryParser.processJson(command);
                 if (data != null) {
                     getDashboardView().getApplicationWindow().getTelemetryDataManager().addData(data);
+                    getDashboardView().updateCalibrationChart();
 
                     javafx.application.Platform.runLater(() -> {
                         DashboardController controller = (DashboardController) getDashboardView().getController();
