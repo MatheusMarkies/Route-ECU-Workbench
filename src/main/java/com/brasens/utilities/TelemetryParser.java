@@ -27,6 +27,8 @@ public class TelemetryParser {
 
             } else if (json.contains("\"engine\"")) {
                 data = mapper.readValue(json, EngineTelemetry.class);
+            } else if (json.contains("\"cycle\"")) {
+                data = mapper.readValue(json, CycleTelemetry.class);
             }
 
         } catch (Exception e) {

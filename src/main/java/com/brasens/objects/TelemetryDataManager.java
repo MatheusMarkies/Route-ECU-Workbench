@@ -15,6 +15,7 @@ public class TelemetryDataManager {
     private final List<ADCTelemetry> adcHistory = Collections.synchronizedList(new ArrayList<>());
     private final List<BatteryTelemetry> batteryHistory = Collections.synchronizedList(new ArrayList<>());
     private final List<EngineTelemetry> engineHistory = Collections.synchronizedList(new ArrayList<>());
+    private final List<CycleTelemetry> cycleHistory = Collections.synchronizedList(new ArrayList<>()); // ← MODIFICAR: tornar synchronized
 
     private boolean inIgnitionTest = false;
     private boolean inInjectorTest = false;
@@ -36,13 +37,13 @@ public class TelemetryDataManager {
             latestBatteryTelemetry = (BatteryTelemetry) data;
         }
         else if (data instanceof EngineTelemetry) engineHistory.add((EngineTelemetry) data);
+        else if (data instanceof CycleTelemetry) cycleHistory.add((CycleTelemetry) data); // ← ADICIONAR
     }
 
     public List<VRTelemetry> getVrHistory() {
         return new ArrayList<>(vrHistory);
     }
 
-    // Métodos auxiliares para obter valores de calibração
     public double getBatteryLvLVoltage() {
         if (latestBatteryTelemetry != null &&
                 latestBatteryTelemetry.getBattery() != null &&

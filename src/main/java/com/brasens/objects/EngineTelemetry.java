@@ -35,6 +35,7 @@ public class EngineTelemetry extends Telemetry{
     @Data
     public static class ShaftInfo {
         private double angularvelocity;
+        private double angularacc;
         private double angle;
     }
 }

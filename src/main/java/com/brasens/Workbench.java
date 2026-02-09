@@ -47,8 +47,7 @@ public class Workbench extends Application {
 
         scene = new Scene(root, ApplicationWindow.MIN_WIDTH + 80, 768, false, antialiasing);
 
-        Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
-
+        Application.setUserAgentStylesheet(new atlantafx.base.theme.PrimerDark().getUserAgentStylesheet());
         scene.getStylesheets().add(getClass().getResource("/mspm/pages/DashboardCSS.css").toString());
 
         stage.setScene(scene);

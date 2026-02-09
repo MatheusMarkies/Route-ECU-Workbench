@@ -44,12 +44,14 @@ public class CustomButton extends AnchorPane {
         AnchorPane.setRightAnchor(buttonLegendHBox, 0.0);
         AnchorPane.setTopAnchor(buttonLegendHBox, 0.0);
 
-        this.setStyle(style);
+        //this.setStyle(style);
+        this.getStyleClass().add("custom-button");
         this.setCursor(Cursor.HAND);
 
         this.getChildren().addAll(buttonLegendHBox);
     }
 
+    /*
     public void setAnimation(Color defaultColor, Color actionColor, float timer){
         this.setOnMouseEntered(event -> {
             final Animation animation = new Transition() {
@@ -91,5 +93,5 @@ public class CustomButton extends AnchorPane {
             animation.play();
         });
     }
-
+*/
 }

@@ -33,7 +33,7 @@ public class SerialRunnable implements SerialPortDataListener, Runnable {
 
     private DashboardView dashboardView;
 
-    public static final int BAUD_RATE = 115200;
+    public static final int BAUD_RATE = 460800;
     public static final int DATA_BITS = 8;
     public static final int STOP_BITS = SerialPort.ONE_STOP_BIT;
     public static final int PARITY = SerialPort.NO_PARITY;
@@ -81,7 +81,7 @@ public class SerialRunnable implements SerialPortDataListener, Runnable {
         }
 
 
-        serialPort.setComPortParameters(115200, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
+        serialPort.setComPortParameters(BAUD_RATE, 8, SerialPort.ONE_STOP_BIT, SerialPort.NO_PARITY);
         serialPort.setFlowControl(SerialPort.FLOW_CONTROL_DISABLED);
         serialPort.setComPortTimeouts(SerialPort.TIMEOUT_WRITE_BLOCKING, 0, 100);
 
@@ -95,7 +95,7 @@ public class SerialRunnable implements SerialPortDataListener, Runnable {
         thread.setName("SerialWorker-" + serialPortName);
         thread.start();
 
-        sendCommand(new SerialCommand("AT", 1000));
+        sendCommand(new SerialCommand("AT", 100));
     }
 
     public void reconnect() {
@@ -156,6 +156,8 @@ public class SerialRunnable implements SerialPortDataListener, Runnable {
                 isAnswer = true;
                 System.out.println();
                 System.out.println("Resposta Recebida: " + command);
+
+                tryTimes=0;
 
                 if (commandsBuffer.get(0).getCallback() != null) {
                     javafx.application.Platform.runLater(commandsBuffer.get(0).getCallback());
@@ -219,6 +221,8 @@ public class SerialRunnable implements SerialPortDataListener, Runnable {
         }
     }
 
+    int tryTimes = 0;
+
     @Override
     public void run() {
         if (serialPort != null && serialPort.isOpen()) {
@@ -233,11 +237,12 @@ public class SerialRunnable implements SerialPortDataListener, Runnable {
                     SerialCommand first = commandsBuffer.get(0);
                     long rtt = System.currentTimeMillis() - first.getTimestamp();
 
-                    if (rtt > first.getTimeout()) {
+                    if (rtt > first.getTimeout() && tryTimes < 5) {
                         System.out.println("Timeout detectado para: " + first.getCommand());
+                        tryTimes++;
                         sendCommand(first);
                         commandsBuffer.remove(0);
-                    }
+                    }else if(tryTimes >= 5) commandsBuffer.remove(0);
                 }
                 Thread.sleep(100);
             } catch (InterruptedException e) {
