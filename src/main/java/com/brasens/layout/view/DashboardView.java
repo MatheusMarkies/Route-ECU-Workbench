@@ -75,7 +75,6 @@ public class DashboardView extends Page {
         getStyleClass().add("body");
         setMinHeight(1100);
 
-        // Container principal com scroll
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setFitToWidth(true);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -165,7 +164,6 @@ public class DashboardView extends Page {
         grid.setVgap(20);
         grid.setPadding(new Insets(0));
 
-        // Configurar colunas para serem responsivas
         ColumnConstraints col1 = new ColumnConstraints();
         col1.setPercentWidth(33.33);
         col1.setHgrow(Priority.ALWAYS);
@@ -180,7 +178,6 @@ public class DashboardView extends Page {
 
         grid.getColumnConstraints().addAll(col1, col2, col3);
 
-        // LINHA 0: ENGINE, VR SENSORS, BATTERY
         VBox enginePanel = createEnginePanel();
         enginePanel.setMaxWidth(Double.MAX_VALUE);
         grid.add(enginePanel, 0, 0);
@@ -475,13 +472,11 @@ public class DashboardView extends Page {
     private VBox createCyclePanel() {
         VBox panel = createTelemetryPanel("CICLO DE IGNIÇÃO", "#ffffff");
 
-        // Grid para organizar os cilindros em 2 colunas
         GridPane cylindersGrid = new GridPane();
         cylindersGrid.setHgap(15);
         cylindersGrid.setVgap(10);
         cylindersGrid.setPadding(new Insets(5, 0, 0, 0));
 
-        // Configurar colunas do grid interno
         ColumnConstraints colCyl1 = new ColumnConstraints();
         colCyl1.setPercentWidth(50);
         colCyl1.setHgrow(Priority.ALWAYS);
@@ -492,7 +487,6 @@ public class DashboardView extends Page {
 
         cylindersGrid.getColumnConstraints().addAll(colCyl1, colCyl2);
 
-        // Coluna 1: Cilindros 0 e 1
         VBox cyl0Box = createCylinderBox("Cilindro 0");
         cyl0DwellLabel = createValueLabel("Dwell: --°");
         cyl0SparkLabel = createValueLabel("Spark: --°");
@@ -503,7 +497,6 @@ public class DashboardView extends Page {
         cyl1SparkLabel = createValueLabel("Spark: --°");
         cyl1Box.getChildren().addAll(cyl1DwellLabel, cyl1SparkLabel);
 
-        // Coluna 2: Cilindros 2 e 3
         VBox cyl2Box = createCylinderBox("Cilindro 2");
         cyl2DwellLabel = createValueLabel("Dwell: --°");
         cyl2SparkLabel = createValueLabel("Spark: --°");
@@ -514,7 +507,6 @@ public class DashboardView extends Page {
         cyl3SparkLabel = createValueLabel("Spark: --°");
         cyl3Box.getChildren().addAll(cyl3DwellLabel, cyl3SparkLabel);
 
-        // Adicionar ao grid (2x2)
         cylindersGrid.add(cyl0Box, 0, 0);
         cylindersGrid.add(cyl2Box, 1, 0);
         cylindersGrid.add(cyl1Box, 0, 1);
@@ -545,7 +537,6 @@ public class DashboardView extends Page {
             if (data != null && data.getCycle() != null) {
                 CycleTelemetry.CycleInfo cycle = data.getCycle();
 
-                // Cilindro 0
                 if (cycle.getCylinderZero() != null) {
                     cyl0DwellLabel.setText(String.format("Dwell: %.4f°",
                             cycle.getCylinderZero().getDwellAngle()));
@@ -553,7 +544,6 @@ public class DashboardView extends Page {
                             cycle.getCylinderZero().getSparkAngle()));
                 }
 
-                // Cilindro 1
                 if (cycle.getCylinderOne() != null) {
                     cyl1DwellLabel.setText(String.format("Dwell: %.4f°",
                             cycle.getCylinderOne().getDwellAngle()));
@@ -561,7 +551,6 @@ public class DashboardView extends Page {
                             cycle.getCylinderOne().getSparkAngle()));
                 }
 
-                // Cilindro 2
                 if (cycle.getCylinderTwo() != null) {
                     cyl2DwellLabel.setText(String.format("Dwell: %.4f°",
                             cycle.getCylinderTwo().getDwellAngle()));
@@ -569,7 +558,6 @@ public class DashboardView extends Page {
                             cycle.getCylinderTwo().getSparkAngle()));
                 }
 
-                // Cilindro 3
                 if (cycle.getCylinderThree() != null) {
                     cyl3DwellLabel.setText(String.format("Dwell: %.4f°",
                             cycle.getCylinderThree().getDwellAngle()));
@@ -582,7 +570,6 @@ public class DashboardView extends Page {
 
     private void updateADCPanelContent(VBox panel, List<ADCTelemetry.AdcSensor> sensors, String title) {
         javafx.application.Platform.runLater(() -> {
-            // Keep only the title label
             if (panel.getChildren().size() > 1) {
                 panel.getChildren().subList(1, panel.getChildren().size()).clear();
             }
