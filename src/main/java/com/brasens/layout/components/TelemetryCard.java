@@ -26,7 +26,6 @@ public class TelemetryCard extends AnchorPane {
         setMinHeight(150);
         setMinWidth(300);
         
-        // Estilo específico para tema escuro
         setStyle(
             "-fx-background-color: " + backgroundColor + "; " +
             "-fx-background-radius: 8px; " +
