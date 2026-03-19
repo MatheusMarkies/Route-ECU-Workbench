@@ -46,7 +46,6 @@ public class TelemetryCard extends AnchorPane {
         AnchorPane.setRightAnchor(cardStruct, 0.0);
         AnchorPane.setTopAnchor(cardStruct, 0.0);
 
-        // Header com título
         HBox cardHeaderHBox = new HBox();
         cardHeaderHBox.setAlignment(Pos.CENTER_LEFT);
         
@@ -60,11 +59,9 @@ public class TelemetryCard extends AnchorPane {
         
         cardHeaderHBox.getChildren().add(cardTitleLabel);
 
-        // Separador
         Separator separator = new Separator();
         separator.setStyle("-fx-background-color: #3a3a3a;");
 
-        // Área de conteúdo
         contentAnchorPane = new AnchorPane();
         VBox.setVgrow(contentAnchorPane, Priority.ALWAYS);
 
